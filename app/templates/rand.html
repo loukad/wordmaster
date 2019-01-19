@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block menu %}
+      <a href="/add">Add Word</a>
+      <a href="/view">View Words</a>
+      <a class="selected" href="/rand">Random</a>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+      {% for word, definition in words %}
+      <div class="wordgroup">
+        <div class="word">{{ word }}</div>
+        <div class="definition">{{ definition }}</div>
+      </div>
+      {% endfor %}
+    </div>
+{% endblock %}

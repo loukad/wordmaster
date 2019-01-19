@@ -1,2 +1,2 @@
-# wordmaster
-Vocabular management web app
+# Wordmaster
+Vocabulary management web app
