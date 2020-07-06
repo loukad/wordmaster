@@ -39,6 +39,25 @@ div#container>div:nth-of-type(odd) {
   padding: 15px;
 }
 
+.delete {
+  border-left: none;
+  padding: 0px;
+}
+.delete a:link {
+  color: #b3cccc;
+  text-decoration: none;
+}
+
+.delete a:visited {
+  color: #b3cccc;
+  text-decoration: none;
+}
+
+.delete a:hover {
+  color: #b3cccc;
+  text-decoration: underline;
+}
+
 .info {
   color: blue;
 }
