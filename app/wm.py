@@ -2,97 +2,96 @@ import os
 import sys
 import sqlite3
 import flask
-from flask import Flask,render_template,request
+
+from datetime import datetime
+
+from flask import Flask, g, render_template, request, url_for
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.expression import func
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 
-def get_conn():
-    if not hasattr(flask.g, 'dbconn'):
-        flask.g.dbconn = sqlite3.connect('words.db')
-    c = flask.g.dbconn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS words('
-              'word TEXT PRIMARY KEY,'
-              'definition TEXT,'
-              'added DATETIME DEFAULT CURRENT_TIMESTAMP)')
+db = SQLAlchemy(app)
 
-    return flask.g.dbconn
+class Word(db.Model):
+    __tablename__ = 'words'
 
-def get_size():
-    c = get_conn().cursor()
-    c.execute('SELECT count(*) FROM words')
-    return c.fetchone()[0]
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.String, unique=True, nullable=False)
+    definition = db.Column(db.String, nullable=False)
+    added = db.Column(db.DateTime, default=datetime.utcnow)
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'max-age=0'
+    return response
+
+def word_count():
+    return db.session.query(Word).count()
 
 def get_definition(word):
-    c = get_conn().cursor()
-    c.execute("SELECT definition, added FROM words WHERE word=?", (word,))
-    return c.fetchone()
+    return db.session.query(Word).filter(Word.word == word).first()
 
 def insert_definition(word, definition):
-    con = get_conn()
-    c = con.cursor()
-    c.execute("INSERT INTO words (word, definition) VALUES (?, ?)", (word, definition))
-    con.commit()
+    db.session.add(Word(word=word, definition=definition))
+    db.session.commit()
 
-@app.route("/")
-@app.route("/add")
+@app.route('/')
+@app.route('/add')
 def add_word():
 
     msg_kind = 'info'
     message = ''
 
     # Check for form parameters
-    word = request.values.get('word')
-    definition = request.values.get('definition')
+    word = request.values.get('word', '').strip()
+    definition = request.values.get('definition', '').strip()
 
-    # Is the word in the dictionary?
     if word:
-        dict_def = get_definition(word)
-        if dict_def is None:
-            # Add it to the dictionary
-            insert_definition(word, definition)
-            message = 'Added <em>%s</em> : %s to dictionary' % (word, definition)
-        else:
-            definition, added = dict_def
+        # Is the word already in the dictionary?
+        previous = get_definition(word)
+        if previous is not None:
+            del_url = url_for('delete_word', word=word)
             msg_kind = 'error'
-            message = 'Word already exists: %s &mdash; %s [<a href="/delete/%s">Delete it</a>]' % \
-                                (word, dict_def, word)
+            message = f'Word already exists: {previous.word} &mdash; ' \
+                      f'{previous.definition}. ' \
+                      f'[<a href="{del_url}">Delete it</a>]'
+        else:
+            insert_definition(word, definition)
+            message = f'Added <em>{word}</em> : {definition} to dictionary'
 
-    return render_template('add.html', word_count=get_size(),
+    return render_template('add.html', word_count=word_count(),
                                        msg_kind=msg_kind,
                                        message=message)
 
-def view_template(template, conditions):
-    c = get_conn().cursor()
-    c.execute('SELECT word, definition FROM words ORDER BY %s' % conditions)
-    words = c.fetchall()
-    return render_template(template, word_count=get_size(), words=words)
-
 @app.route("/view")
 def view():
-    return view_template('view.html', 'added DESC LIMIT 200')
+    words = db.session.query(Word).order_by(Word.added.desc()).limit(200).all()
+    return render_template('view.html', word_count=word_count(), words=words)
 
 @app.route("/view/all")
 def view_all():
-    return view_template('view.html', 'added DESC')
+    words = db.session.query(Word).order_by(Word.added.desc()).all()
+    return render_template('view.html', word_count=word_count(), words=words)
 
 @app.route("/rand")
 def random():
-    return view_template('rand.html', 'RANDOM() LIMIT 1')
+    words = db.session.query(Word).order_by(func.random()).limit(1).all()
+    return render_template('rand.html', word_count=word_count(), words=words)
 
 @app.route("/delete/<word>")
 def delete_word(word):
     msg_kind = 'info'
-    message = 'Deleted word <em>%s</em>' % word
+    message = f'Deleted word <em>{word}</em>'
 
-    con = get_conn()
-    con.cursor().execute('DELETE FROM words WHERE word=?', (word,))
-    con.commit()
+    found = db.session.query(Word).filter(Word.word == word).one()
+    if found is None:
+        msg_kind = 'error'
+        message = f'Could not find word {word} to delete'
+    else:
+        db.session.delete(found)
+        db.session.commit()
 
-    return render_template('add.html', word_count=get_size(),
-                                       msg_kind=msg_kind,
-                                       message=message)
+    return render_template('add.html', msg_kind=msg_kind, message=message)
 
-
-if __name__ == "__main__":
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.run(port = 5001)

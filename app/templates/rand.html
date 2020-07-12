@@ -7,12 +7,6 @@
 {% endblock %}
 
 {% block content %}
-    <div id="container">
-      {% for word, definition in words %}
-      <div class="wordgroup">
-        <div class="word">{{ word }}</div>
-        <div class="definition">{{ definition }}</div>
-      </div>
-      {% endfor %}
-    </div>
+    {{ word_tiles() }}
 {% endblock %}
+

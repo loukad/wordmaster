@@ -15,6 +15,18 @@
       Words in dictionary: {{ word_count }}
     </div>
     <div id="message" class="{{ msg_kind }}">{{ message|safe }}</div>
+    {% macro word_tiles() -%}
+      <div id="container">
+      {% for w in words %}
+      <div class="wordgroup">
+        <div class="word">{{ w.word }}</div>
+        <div class="definition">{{ w.definition }}</div>
+        <div class="delete"><a href="{{url_for('delete_word', word=w.word)}}">&#10006;</a></div>
+      </div>
+      {% endfor %}
+    </div>
+    {%- endmacro %}
+
     {% block content %}
     {% endblock %}
   </body>

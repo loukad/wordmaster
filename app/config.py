@@ -1,0 +1,5 @@
+import os
+
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///words.db')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
