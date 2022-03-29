@@ -21,7 +21,7 @@
       <div class="wordgroup">
         <div class="word">{{ w.word }}</div>
         <div class="definition">{{ w.definition }}</div>
-        <div class="delete"><a href="{{url_for('delete_word', word=w.word)}}">&#10006;</a></div>
+        <div class="delete"><a href="{{url_for('delete_word', name=name, word=w.word)}}">&#10006;</a></div>
       </div>
       {% endfor %}
     </div>

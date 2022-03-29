@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block menu %}
-      <a href="/add">Add Word</a>
-      <a class="selected" href="/view">View Words</a>
-      <a href="/rand">Random</a>
+    <a href="{{ url_for('add_word', name=name) }}">Add Word</a>
+    <a class="selected" href="{{ url_for('view', name=name) }}">View Words</a>
+    <a href="{{ url_for('random', name=name) }}">Random</a>
 {% endblock %}
 
 {% block content %}
