@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>WordMaster</title>
+    <link rel=stylesheet href="/static/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+
+  <body>
+    <div class="nav">
+      {% block menu %}{% endblock %}
+    </div>
+    <div id="summary">
+      Select a dictionary:
+    </div>
+    <div id="container">
+      <ul>
+      {% for d in dictionaries %}
+      <li><a href="{{url_for('add_word', name=d.name)}}">{{ d.name }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+  </body>
+
+</html>
+
