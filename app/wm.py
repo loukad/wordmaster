@@ -75,13 +75,13 @@ def add_word(d):
         # Is the word already in the dictionary?
         previous = get_definition(d.id, word)
         if previous is not None:
-            del_url = url_for('delete_word', word=word)
+            del_url = url_for('delete_word', word=word, name=d.name)
             msg_kind = 'error'
             message = f'Word already exists: {previous.word} &mdash; ' \
                       f'{previous.definition}. ' \
                       f'[<a href="{del_url}">Delete it</a>]'
         else:
-            insert_definition(word, definition)
+            insert_definition(d.id, word, definition)
             message = f'Added <em>{word}</em> : {definition} to dictionary'
 
     params = dict(name=d.name, word_count=word_count(d.id), msg_kind=msg_kind,
