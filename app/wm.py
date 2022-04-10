@@ -56,11 +56,6 @@ def insert_definition(did, word, definition):
     db.session.add(Word(dictionary_id=did, word=word, definition=definition))
     db.session.commit()
 
-@app.after_request
-def close_session(response):
-    db.session.close()
-    return response
-
 @app.route('/')
 def list():
     dicts = db.session.query(Dictionary).all()
