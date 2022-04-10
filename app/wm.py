@@ -13,7 +13,7 @@ class Word(db.Model):
     __tablename__ = 'words'
 
     id = db.Column(db.Integer, primary_key=True)
-    word = db.Column(db.String, unique=True, nullable=False)
+    word = db.Column(db.String, nullable=False)
     definition = db.Column(db.String, nullable=False)
     added = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -55,6 +55,11 @@ def get_definition(did, word):
 def insert_definition(did, word, definition):
     db.session.add(Word(dictionary_id=did, word=word, definition=definition))
     db.session.commit()
+
+@app.after_request
+def close_session(response):
+    db.session.close()
+    return response
 
 @app.route('/')
 def list():
