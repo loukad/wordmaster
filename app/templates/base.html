@@ -11,6 +11,7 @@
     <div class="nav">
       {% block menu %}{% endblock %}
     </div>
+
     <div id="summary">
       Words in dictionary: {{ word_count }}
     </div>
@@ -29,6 +30,21 @@
 
     {% block content %}
     {% endblock %}
+
+    <div class="toggle">
+      <input type="radio" id="blurWords" class="toggle-input" name="switch">
+      <label for="blurWords" class="toggle-label blurWords">W</label>
+      
+      <input type="radio" id="neutral" class="toggle-input" name="switch" checked>
+      <label for="neutral" class="toggle-label neutral">&nbsp;</label>
+      
+      <input type="radio" id="blurDefinitions" class="toggle-input" name="switch">
+      <label for="blurDefinitions" class="toggle-label blurDefinitions">D</label>
+      
+      <div class="toggle-thumb"></div>
+    </div>
+
+    <script src="/static/wm.js"></script>
   </body>
 
 </html>

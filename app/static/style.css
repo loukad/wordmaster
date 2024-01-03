@@ -75,7 +75,6 @@ div#container>div:nth-of-type(odd) {
   background-color: #f1f1f1;
   overflow: hidden;
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 24;
   margin: 0px;
 }
 
@@ -154,3 +153,73 @@ div#container>div:nth-of-type(odd) {
   background: #109177;
 }
 
+/* Toggle switch structure and styling */
+.toggle {
+  position: fixed;
+  top: 10px;
+  right: 0%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Hide default radio buttons */
+.toggle input[type="radio"] {
+  display: none;
+}
+
+/* Track styles */
+.toggle-label {
+  display: inline-block;
+  position: relative;
+  width: 45px;
+  line-height: 30px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 12px;
+}
+
+.blurWords {
+  color: #555;
+}
+
+.neutral {
+  color: #555;
+}
+
+.blurDefinitions {
+  color: #555;
+}
+
+/* Thumb styles */
+.toggle-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+#blurWords:checked ~ .toggle-thumb {
+  transform: translateX(0);
+}
+
+#neutral:checked ~ .toggle-thumb {
+  transform: translateX(50px);
+}
+
+#blurDefinitions:checked ~ .toggle-thumb {
+  transform: translateX(100px);
+}
+
+.blur-effect {
+  filter: blur(4px);
+}
